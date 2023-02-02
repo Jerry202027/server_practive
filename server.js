@@ -1,53 +1,34 @@
-// var http = require('http');
-
-// var server = http.createServer(function(req, res) {
-//     res.writeHead(200, { "Content-type": "text/plain" });
-//     res.end("Hello world\n");
-// });
-
-// server.listen(3000, function() {
-//     console.log('Server is running at 3000')
-// });
-
 const express = require('express');
+const axios = require('axios');
 
-const bodyParser = require('body-parser');
+const app = express();
+const port = 3000;
 
-var app = express();
+// Define a custom API key
+const apiKey = 'secret-api-key';
 
-var PORT = 3000;
+// Define a route that returns the result of calling the external API
+app.get('/premiumIndex', async (req, res) => {
+    // Get the value of the X-API-KEY header from the request
+    const clientApiKey = req.get('X-API-KEY');
 
-app.use(express.urlencoded({
-    extended: false
-}))
+    // Check if the API key is valid
+    if (clientApiKey !== apiKey) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
 
-app.get('/', function (req, res) {
-    res.send(`
-<form action="/answer" method="POST">
-    <p>晴天的天空是什麼顏色？</p>
-    <input name="skyColor" autocomplete="off">
-    <button>送出答案</button>
-  </form>
-  `);
-});
+    // Make a GET request to the external API
+    try {
+        const response = await axios.get('https://fapi.binance.com/fapi/v1/premiumIndex');
 
-app.post('/answer', function (req, res) {
-    if (req.body.skyColor.toUpperCase() == "BLUE") {
-        res.send(`
-            <p>恭喜您，答對了。這是正確答案</p>
-            <a href="/">回首頁</a>
-        `)
-    } else {
-        res.send(`
-           <p>真可惜，答錯了。</p>
-           <a href="/">回首頁</a>
-       `)
+        // Return the result of the external API to the client
+        return res.json(response.data);
+    } catch (error) {
+        return res.status(500).json({ error: 'Failed to fetch data from the external API' });
     }
 });
-// app.get('/answer', function (req, res) {
-//     res.send("迷路了嗎? 這裡什麼都沒有")
-// });
 
-app.listen(PORT, function () {
-    console.log('Server is running on PORT:', PORT);
+// Start the Express server
+app.listen(port, () => {
+    console.log(`Server listening at http://localhost:${port}`);
 });
