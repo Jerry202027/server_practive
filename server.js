@@ -1,34 +1,33 @@
 const express = require('express');
-const axios = require('axios');
-
 const app = express();
-const port = 3000;
+const cors = require('cors');
+const bybit = require('./bybit');
+const binance = require('./binance');
 
-// Define a custom API key
-const apiKey = 'secret-api-key';
+app.use(cors());
+app.use(express.json());
 
-// Define a route that returns the result of calling the external API
-app.get('/premiumIndex', async (req, res) => {
-    // Get the value of the X-API-KEY header from the request
-    const clientApiKey = req.get('X-API-KEY');
-
-    // Check if the API key is valid
-    if (clientApiKey !== apiKey) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    // Make a GET request to the external API
-    try {
-        const response = await axios.get('https://fapi.binance.com/fapi/v1/premiumIndex');
-
-        // Return the result of the external API to the client
-        return res.json(response.data);
-    } catch (error) {
-        return res.status(500).json({ error: 'Failed to fetch data from the external API' });
-    }
+app.get('/bybit', async (req, res) => {
+    const data = await bybit.getPremiumList();
+    res.send(data);
 });
 
-// Start the Express server
+app.get('/binance', async (req, res) => {
+    const data = await binance.getPremiumList();
+    res.send(data);
+});
+
+// app.get("/orderBook/:symbol", async (req, res) => {
+//     try {
+//         const symbol = req.params.symbol;
+//         const orderBook = await bybit.getOrderBook(symbol);
+//         res.json(orderBook);
+//     } catch (error) {
+//         res.status(500).send(`Error getting order book for symbol ${symbol} from Bybit API`);
+//     }
+// });
+
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
+    console.log(`Server running on port ${port}`);
 });
