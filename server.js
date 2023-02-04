@@ -3,29 +3,40 @@ const app = express();
 const cors = require('cors');
 const bybit = require('./bybit');
 const binance = require('./binance');
+const mexc = require('./mexc');
+const kucoin = require('./kucoin');
+const okx = require('./okx');
 
 app.use(cors());
 app.use(express.json());
 
-app.get('/bybit', async (req, res) => {
-    const data = await bybit.getPremiumList();
-    res.send(data);
+app.get('/premium', async (req, res) => {
+
+    const bybitPremium = await bybit.getPremium();
+    const binancePremium = await binance.getPremium();
+    const mexcPremium = await mexc.getPremium();
+    const kucoinPremium = await kucoin.getPremium();
+    const okxPremium = await okx.getPremium();
+    var premium = {
+        bybit: bybitPremium,
+        binance: binancePremium,
+        mexc: mexcPremium,
+        kucoin: kucoinPremium,
+        okx: okxPremium,
+    };
+    res.send(premium);
 });
 
-app.get('/binance', async (req, res) => {
-    const data = await binance.getPremiumList();
-    res.send(data);
+app.get('/okx', async (req, res) => {
+
+    // const bybitPremium = await bybit.getPremium();
+    // const binancePremium = await binance.getPremium();
+    const okxPremium = await okx.getPremium();
+    // var premium = { bybit: bybitPremium, binance: binancePremium, mexc: mexcPremium };
+    res.send(okxPremium);
 });
 
-// app.get("/orderBook/:symbol", async (req, res) => {
-//     try {
-//         const symbol = req.params.symbol;
-//         const orderBook = await bybit.getOrderBook(symbol);
-//         res.json(orderBook);
-//     } catch (error) {
-//         res.status(500).send(`Error getting order book for symbol ${symbol} from Bybit API`);
-//     }
-// });
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

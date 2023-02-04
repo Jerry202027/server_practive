@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const binance = {
-    async getPremiumList() {
+    async getPremium() {
         const response = await axios.get('https://fapi.binance.com/fapi/v1/premiumIndex');
         var binancePremiumList = [];
         var lastPrice;

@@ -1,6 +1,6 @@
-async function fetchBybitData() {
+async function fetchPremium() {
     try {
-        const response = await fetch('http://localhost:3000/bybit');
+        const response = await fetch('http://localhost:3000/premium');
         const data = await response.json();
         console.log(data);
     } catch (error) {
@@ -8,9 +8,9 @@ async function fetchBybitData() {
     }
 }
 
-async function fetchBinanceData() {
+async function fetchkucoin() {
     try {
-        const response = await fetch('http://localhost:3000/binance');
+        const response = await fetch('http://localhost:3000/okx');
         const data = await response.json();
         console.log(data);
     } catch (error) {
@@ -19,7 +19,9 @@ async function fetchBinanceData() {
 }
 
 
-fetchBybitData();
-fetchBinanceData();
+
+fetchkucoin();
+fetchPremium();
+
 
 
